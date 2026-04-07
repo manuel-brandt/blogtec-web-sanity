@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/local/bin/**)",
+      "Bash(echo $PATH)",
+      "Read(//Users/manuel/.nvm/versions/**)",
+      "Read(//Users/manuel/.volta/**)",
+      "Read(//Users/manuel/**)",
+      "Read(//opt/homebrew/**)",
+      "Bash(/bin/bash -l -c \"which node npm npx\")",
+      "Bash(zsh -l -c \"which node && node --version && which npm && which npx\")",
+      "Read(//opt/**)",
+      "Bash(mdfind -name node)",
+      "Bash(find /Applications/Claude.app -maxdepth 4 -name *.dylib)",
+      "Bash(osascript -e 'tell application \"\"Terminal\"\" to do script \"\"node --version && npm --version\"\"')",
+      "Bash(osascript:*)",
+      "Bash(ln -sf \"/Users/manuel/Desktop/Code Bases/blogtec-web-sanity\" /Users/manuel/blogtec)",
+      "Bash(git --version)"
+    ]
+  }
+}
