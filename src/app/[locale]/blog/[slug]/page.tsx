@@ -16,8 +16,8 @@ function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("de-DE", {
+function formatDate(dateString: string, locale: string) {
+  return new Date(dateString).toLocaleDateString(locale === "en" ? "en-GB" : "de-DE", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -33,7 +33,17 @@ const categoryColors: Record<string, string> = {
   Allgemein: "bg-gray-100 text-gray-700",
 };
 
-// Portable Text components for styled rendering
+const ui = {
+  de: {
+    back: "← Zurück zum Blog",
+    backAll: "← Alle Beiträge ansehen",
+  },
+  en: {
+    back: "← Back to Blog",
+    backAll: "← View all posts",
+  },
+};
+
 const portableTextComponents = {
   block: {
     normal: ({ children }: { children?: React.ReactNode }) => (
@@ -107,18 +117,33 @@ interface BlogPost {
 }
 
 interface Params {
+  locale: string;
   slug: string;
 }
 
 export async function generateStaticParams() {
-  const posts: BlogPost[] = await client.fetch(allBlogPostsQuery).catch(() => []);
-  return posts.map((post) => ({ slug: post.slug.current }));
+  const locales = ["de", "en"];
+  const results: { locale: string; slug: string }[] = [];
+
+  for (const locale of locales) {
+    const posts: BlogPost[] = await client
+      .fetch(allBlogPostsQuery, { lang: locale })
+      .catch(() => []);
+    posts.forEach((post) => {
+      results.push({ locale, slug: post.slug.current });
+    });
+  }
+
+  return results;
 }
 
 export default async function BlogPostPage({ params }: { params: Promise<Params> }) {
-  const { slug } = await params;
+  const { locale, slug } = await params;
+  const lang = locale === "en" ? "en" : "de";
+  const t = ui[lang as keyof typeof ui];
+
   const post: BlogPost | null = await client
-    .fetch(blogPostBySlugQuery, { slug })
+    .fetch(blogPostBySlugQuery, { slug, lang })
     .catch(() => null);
 
   if (!post) notFound();
@@ -130,8 +155,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
         {/* Hero */}
         <section className="bg-gray-50 border-b border-gray-200 py-12 px-4">
           <div className="max-w-3xl mx-auto">
-            <Link href="/blog" className="text-sm text-blue-600 hover:underline mb-6 inline-block">
-              ← Zurück zum Blog
+            <Link href={`/${lang}/blog`} className="text-sm text-blue-600 hover:underline mb-6 inline-block">
+              {t.back}
             </Link>
 
             <div className="flex items-center gap-3 mb-4">
@@ -141,7 +166,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
                 </span>
               )}
               {post.publishedAt && (
-                <span className="text-sm text-gray-400">{formatDate(post.publishedAt)}</span>
+                <span className="text-sm text-gray-400">{formatDate(post.publishedAt, lang)}</span>
               )}
             </div>
 
@@ -172,7 +197,7 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
         {/* Cover image */}
         {post.coverImage && (
-          <div className="max-w-4xl mx-auto px-4 -mt-0 pt-10">
+          <div className="max-w-4xl mx-auto px-4 pt-10">
             <Image
               src={urlFor(post.coverImage).width(1200).height(630).url()}
               alt={post.coverImage.alt ?? post.title}
@@ -192,8 +217,8 @@ export default async function BlogPostPage({ params }: { params: Promise<Params>
 
         {/* Back link */}
         <div className="max-w-3xl mx-auto px-4 pb-16">
-          <Link href="/blog" className="text-sm text-blue-600 hover:underline">
-            ← Alle Beiträge ansehen
+          <Link href={`/${lang}/blog`} className="text-sm text-blue-600 hover:underline">
+            {t.backAll}
           </Link>
         </div>
       </main>

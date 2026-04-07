@@ -73,6 +73,13 @@ export const blogPostSchema = defineType({
       ],
     }),
     defineField({
+      name: "language",
+      title: "Language",
+      type: "string",
+      readOnly: true,
+      hidden: true,
+    }),
+    defineField({
       name: "body",
       title: "Body",
       type: "array",

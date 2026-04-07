@@ -14,8 +14,8 @@ function urlFor(source: SanityImageSource) {
   return builder.image(source);
 }
 
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString("de-DE", {
+function formatDate(dateString: string, locale: string) {
+  return new Date(dateString).toLocaleDateString(locale === "en" ? "en-GB" : "de-DE", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -31,6 +31,23 @@ const categoryColors: Record<string, string> = {
   Allgemein: "bg-gray-100 text-gray-700",
 };
 
+const ui = {
+  de: {
+    label: "Blog",
+    heading: "Marketing-Wissen & Insights",
+    subheading: "Strategien, Tipps und Trends rund um SEO, Content Marketing und digitales Wachstum.",
+    empty: "Noch keine Beiträge vorhanden.",
+    readMore: "Weiterlesen →",
+  },
+  en: {
+    label: "Blog",
+    heading: "Marketing Knowledge & Insights",
+    subheading: "Strategies, tips and trends around SEO, content marketing and digital growth.",
+    empty: "No posts yet.",
+    readMore: "Read more →",
+  },
+};
+
 interface BlogPost {
   title: string;
   slug: { current: string };
@@ -41,8 +58,22 @@ interface BlogPost {
   author?: string;
 }
 
-export default async function BlogPage() {
-  const posts: BlogPost[] = await client.fetch(allBlogPostsQuery).catch(() => []);
+interface Params {
+  locale: string;
+}
+
+export async function generateStaticParams() {
+  return [{ locale: "de" }, { locale: "en" }];
+}
+
+export default async function BlogPage({ params }: { params: Promise<Params> }) {
+  const { locale } = await params;
+  const lang = locale === "en" ? "en" : "de";
+  const t = ui[lang as keyof typeof ui];
+
+  const posts: BlogPost[] = await client
+    .fetch(allBlogPostsQuery, { lang })
+    .catch(() => []);
 
   return (
     <>
@@ -51,13 +82,9 @@ export default async function BlogPage() {
         {/* Header */}
         <section className="bg-gray-50 border-b border-gray-200 py-16 px-4">
           <div className="max-w-6xl mx-auto">
-            <p className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-3">Blog</p>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              Marketing-Wissen & Insights
-            </h1>
-            <p className="text-lg text-gray-500 max-w-2xl">
-              Strategien, Tipps und Trends rund um SEO, Content Marketing und digitales Wachstum.
-            </p>
+            <p className="text-sm font-semibold text-blue-600 uppercase tracking-widest mb-3">{t.label}</p>
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">{t.heading}</h1>
+            <p className="text-lg text-gray-500 max-w-2xl">{t.subheading}</p>
           </div>
         </section>
 
@@ -65,14 +92,14 @@ export default async function BlogPage() {
         <section className="max-w-6xl mx-auto px-4 py-16">
           {posts.length === 0 ? (
             <div className="text-center py-24">
-              <p className="text-gray-400 text-lg">Noch keine Beiträge vorhanden.</p>
+              <p className="text-gray-400 text-lg">{t.empty}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
                 <Link
                   key={post.slug.current}
-                  href={`/blog/${post.slug.current}`}
+                  href={`/${lang}/blog/${post.slug.current}`}
                   className="group flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-200"
                 >
                   {/* Cover image */}
@@ -103,7 +130,7 @@ export default async function BlogPage() {
                         </span>
                       )}
                       {post.publishedAt && (
-                        <span className="text-xs text-gray-400">{formatDate(post.publishedAt)}</span>
+                        <span className="text-xs text-gray-400">{formatDate(post.publishedAt, lang)}</span>
                       )}
                     </div>
 
@@ -120,7 +147,7 @@ export default async function BlogPage() {
                         <span className="text-xs text-gray-400">{post.author}</span>
                       )}
                       <span className="text-sm font-medium text-blue-600 group-hover:underline ml-auto">
-                        Weiterlesen →
+                        {t.readMore}
                       </span>
                     </div>
                   </div>

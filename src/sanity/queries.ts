@@ -1,6 +1,6 @@
 import { groq } from "next-sanity";
 
-export const allBlogPostsQuery = groq`*[_type == "blogPost"] | order(publishedAt desc){
+export const allBlogPostsQuery = groq`*[_type == "blogPost" && language == $lang] | order(publishedAt desc){
   title,
   slug,
   publishedAt,
@@ -10,7 +10,7 @@ export const allBlogPostsQuery = groq`*[_type == "blogPost"] | order(publishedAt
   "author": author.name
 }`;
 
-export const blogPostBySlugQuery = groq`*[_type == "blogPost" && slug.current == $slug][0]{
+export const blogPostBySlugQuery = groq`*[_type == "blogPost" && slug.current == $slug && language == $lang][0]{
   title,
   slug,
   publishedAt,
