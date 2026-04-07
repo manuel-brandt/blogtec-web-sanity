@@ -1,6 +1,6 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import { homepageSchema } from "./schemas/homepage";
+import { blogPostSchema } from "./schemas/blogPost";
 
 export default defineConfig({
   name: "default",
@@ -9,6 +9,6 @@ export default defineConfig({
   dataset: "production",
   plugins: [structureTool()],
   schema: {
-    types: [homepageSchema],
+    types: [blogPostSchema],
   },
 });
