@@ -3,6 +3,7 @@ export const homepageSchema = {
   title: "Homepage",
   type: "document",
   fields: [
+    // ── Announcement Bar ───────────────────────────────────────────
     {
       name: "announcementBar",
       title: "Announcement Bar",
@@ -14,6 +15,8 @@ export const homepageSchema = {
         { name: "enabled", title: "Enabled", type: "boolean" },
       ],
     },
+
+    // ── Hero Section ───────────────────────────────────────────────
     {
       name: "hero",
       title: "Hero Section",
@@ -27,6 +30,8 @@ export const homepageSchema = {
         { name: "ctaSecondaryLink", title: "Secondary CTA Link", type: "string" },
       ],
     },
+
+    // ── Stats Bar ──────────────────────────────────────────────────
     {
       name: "stats",
       title: "Stats",
@@ -41,6 +46,8 @@ export const homepageSchema = {
         },
       ],
     },
+
+    // ── Logo Bar ───────────────────────────────────────────────────
     {
       name: "logoBar",
       title: "Logo Bar",
@@ -64,6 +71,45 @@ export const homepageSchema = {
         },
       ],
     },
+
+    // ── Services Section ───────────────────────────────────────────
+    {
+      name: "services",
+      title: "Services Section",
+      type: "object",
+      fields: [
+        { name: "heading", title: "Heading", type: "string" },
+        {
+          name: "tabs",
+          title: "Tabs",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "label", title: "Tab Label", type: "string" },
+                {
+                  name: "items",
+                  title: "Service Items",
+                  type: "array",
+                  of: [
+                    {
+                      type: "object",
+                      fields: [
+                        { name: "title", title: "Title", type: "string" },
+                        { name: "href", title: "Link", type: "string" },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // ── Testimonials ───────────────────────────────────────────────
     {
       name: "testimonials",
       title: "Testimonials",
@@ -79,6 +125,49 @@ export const homepageSchema = {
             { name: "avatar", title: "Avatar", type: "image" },
           ],
         },
+      ],
+    },
+
+    // ── Resources Section ──────────────────────────────────────────
+    {
+      name: "resources",
+      title: "Resources Section",
+      type: "object",
+      fields: [
+        { name: "heading", title: "Heading", type: "string" },
+        {
+          name: "items",
+          title: "Resource Items",
+          type: "array",
+          of: [
+            {
+              type: "object",
+              fields: [
+                { name: "type", title: "Type (e.g. Case Study, Guide, Video)", type: "string" },
+                { name: "title", title: "Title", type: "string" },
+                { name: "href", title: "Link", type: "string" },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+
+    // ── CTA Section ────────────────────────────────────────────────
+    {
+      name: "cta",
+      title: "CTA Section",
+      type: "object",
+      fields: [
+        { name: "heading", title: "Heading", type: "string" },
+        {
+          name: "highlights",
+          title: "Bullet Points",
+          type: "array",
+          of: [{ type: "string" }],
+        },
+        { name: "ctaText", title: "Button Text", type: "string" },
+        { name: "ctaLink", title: "Button Link", type: "string" },
       ],
     },
   ],

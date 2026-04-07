@@ -1,5 +1,28 @@
 import Link from "next/link";
 
+interface HeroData {
+  headline?: string;
+  subheadline?: string;
+  ctaPrimaryText?: string;
+  ctaPrimaryLink?: string;
+  ctaSecondaryText?: string;
+  ctaSecondaryLink?: string;
+}
+
+interface Props {
+  data?: HeroData;
+}
+
+const defaults: Required<HeroData> = {
+  headline: "Marketing Leistungen, einfach ausgelagert.",
+  subheadline:
+    "SEO, Google-Ads, Design und Entwicklung mit hervorragender Flexibilität und Zuverlässigkeit.",
+  ctaPrimaryText: "GRATIS ANMELDEN",
+  ctaPrimaryLink: "/register",
+  ctaSecondaryText: "BERATUNG BUCHEN",
+  ctaSecondaryLink: "/beratung",
+};
+
 // Floating UI badge components for the hero illustration
 function Badge({
   children,
@@ -43,12 +66,9 @@ function ProductCard() {
 function DashboardMockup() {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {/* Main laptop/dashboard mockup */}
       <div className="relative w-full max-w-lg">
-        {/* Laptop frame */}
         <div className="bg-gray-800 rounded-t-2xl p-3 shadow-2xl">
           <div className="bg-white rounded-xl overflow-hidden">
-            {/* Browser chrome */}
             <div className="bg-gray-100 px-3 py-2 flex items-center gap-2 border-b">
               <div className="flex gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-red-400" />
@@ -59,7 +79,6 @@ function DashboardMockup() {
                 app.blogtec.io
               </div>
             </div>
-            {/* Dashboard content */}
             <div className="p-4 bg-gray-50 min-h-[220px]">
               <p className="text-xs font-bold text-gray-800 mb-1">Welcome John Doe!</p>
               <p className="text-[10px] text-gray-500 mb-3">We are very happy to welcome you at Blogtec.</p>
@@ -85,12 +104,10 @@ function DashboardMockup() {
             </div>
           </div>
         </div>
-        {/* Laptop base */}
         <div className="bg-gray-700 h-3 rounded-b-xl w-full" />
         <div className="bg-gray-600 h-1 rounded-b-xl w-3/4 mx-auto" />
       </div>
 
-      {/* Floating badges */}
       <Badge className="absolute top-4 right-0 animate-float-slow">
         <div className="w-7 h-7 rounded-full bg-orange-200 flex items-center justify-center text-xs overflow-hidden">
           👩
@@ -124,37 +141,44 @@ function DashboardMockup() {
   );
 }
 
-export default function HeroSection() {
+export default function HeroSection({ data }: Props) {
+  const headline = data?.headline ?? defaults.headline;
+  const subheadline = data?.subheadline ?? defaults.subheadline;
+  const ctaPrimaryText = data?.ctaPrimaryText ?? defaults.ctaPrimaryText;
+  const ctaPrimaryLink = data?.ctaPrimaryLink ?? defaults.ctaPrimaryLink;
+  const ctaSecondaryText = data?.ctaSecondaryText ?? defaults.ctaSecondaryText;
+  const ctaSecondaryLink = data?.ctaSecondaryLink ?? defaults.ctaSecondaryLink;
+
+  // Split headline on comma to allow two-line rendering
+  const [headlineLine1, headlineLine2] = headline.includes(",")
+    ? [headline.split(",")[0] + ",", headline.split(",").slice(1).join(",").trim()]
+    : [headline, ""];
+
   return (
     <section className="bg-[#F5EFE8] overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 py-16 lg:py-24 grid lg:grid-cols-2 gap-12 items-center">
-        {/* Left: copy */}
         <div className="space-y-6">
           <h1 className="text-4xl lg:text-5xl font-black text-black leading-tight">
-            Marketing Leistungen,{" "}
-            <span className="block">einfach ausgelagert.</span>
+            {headlineLine1}
+            {headlineLine2 && <span className="block">{headlineLine2}</span>}
           </h1>
-          <p className="text-lg text-gray-700 max-w-md leading-relaxed">
-            SEO, Google-Ads, Design und Entwicklung mit hervorragender
-            Flexibilität und Zuverlässigkeit.
-          </p>
+          <p className="text-lg text-gray-700 max-w-md leading-relaxed">{subheadline}</p>
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
-              href="/register"
+              href={ctaPrimaryLink}
               className="bg-[#E9204F] text-white rounded-pill px-7 py-3.5 font-bold uppercase tracking-wide text-sm hover:bg-[#d01a44] transition-colors"
             >
-              GRATIS ANMELDEN
+              {ctaPrimaryText}
             </Link>
             <Link
-              href="/beratung"
+              href={ctaSecondaryLink}
               className="border border-black text-black rounded-pill px-7 py-3.5 font-bold uppercase tracking-wide text-sm hover:bg-white/50 transition-colors"
             >
-              BERATUNG BUCHEN
+              {ctaSecondaryText}
             </Link>
           </div>
         </div>
 
-        {/* Right: dashboard illustration */}
         <div className="relative h-[480px] hidden lg:block">
           <DashboardMockup />
         </div>

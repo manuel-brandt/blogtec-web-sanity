@@ -2,7 +2,29 @@
 
 import { useState } from "react";
 
-const testimonials = [
+interface Testimonial {
+  name: string;
+  role: string;
+  company: string;
+  text: string;
+  initials?: string;
+  color?: string;
+}
+
+interface Props {
+  data?: Testimonial[];
+}
+
+const COLORS = [
+  "bg-blue-500",
+  "bg-purple-500",
+  "bg-green-500",
+  "bg-orange-500",
+  "bg-pink-500",
+  "bg-indigo-500",
+];
+
+const defaultTestimonials: Testimonial[] = [
   {
     name: "Marcus Rothermel",
     role: "Agenturinhaber",
@@ -53,17 +75,23 @@ const testimonials = [
   },
 ];
 
-export default function TestimonialsSection() {
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+}
+
+export default function TestimonialsSection({ data }: Props) {
+  const testimonials = data && data.length > 0 ? data : defaultTestimonials;
   const [startIndex, setStartIndex] = useState(0);
   const visible = 3;
 
-  const handlePrev = () => {
-    setStartIndex((prev) => Math.max(0, prev - 1));
-  };
-
-  const handleNext = () => {
+  const handlePrev = () => setStartIndex((prev) => Math.max(0, prev - 1));
+  const handleNext = () =>
     setStartIndex((prev) => Math.min(testimonials.length - visible, prev + 1));
-  };
 
   const visibleTestimonials = testimonials.slice(startIndex, startIndex + visible);
 
@@ -75,38 +103,40 @@ export default function TestimonialsSection() {
         </h2>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleTestimonials.map((t) => (
-            <div
-              key={t.name}
-              className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4"
-            >
-              {/* Stars */}
-              <div className="flex gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <span key={i} className="text-[#F9E90A] text-sm">★</span>
-                ))}
-              </div>
-              <p className="text-gray-700 text-sm leading-relaxed flex-1">
-                &ldquo;{t.text}&rdquo;
-              </p>
-              <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
-                <div
-                  className={`w-10 h-10 rounded-full ${t.color} text-white flex items-center justify-center font-bold text-sm flex-shrink-0`}
-                >
-                  {t.initials}
+          {visibleTestimonials.map((t, idx) => {
+            const initials = t.initials ?? getInitials(t.name);
+            const color = t.color ?? COLORS[idx % COLORS.length];
+            return (
+              <div
+                key={t.name}
+                className="bg-white rounded-2xl p-6 shadow-sm flex flex-col gap-4"
+              >
+                <div className="flex gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-[#F9E90A] text-sm">★</span>
+                  ))}
                 </div>
-                <div>
-                  <p className="font-bold text-sm text-black">{t.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {t.role} – {t.company}
-                  </p>
+                <p className="text-gray-700 text-sm leading-relaxed flex-1">
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
+                  <div
+                    className={`w-10 h-10 rounded-full ${color} text-white flex items-center justify-center font-bold text-sm flex-shrink-0`}
+                  >
+                    {initials}
+                  </div>
+                  <div>
+                    <p className="font-bold text-sm text-black">{t.name}</p>
+                    <p className="text-xs text-gray-500">
+                      {t.role} – {t.company}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Navigation */}
         <div className="flex justify-center gap-3 mt-8">
           <button
             onClick={handlePrev}

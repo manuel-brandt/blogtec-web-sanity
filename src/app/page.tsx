@@ -1,3 +1,5 @@
+import { client } from "@/sanity/client";
+import { homepageQuery } from "@/sanity/queries";
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -11,20 +13,24 @@ import ResourcesSection from "@/components/ResourcesSection";
 import CtaSection from "@/components/CtaSection";
 import Footer from "@/components/Footer";
 
-export default function Home() {
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+
+export default async function Home() {
+  const data = await client.fetch(homepageQuery).catch(() => null);
+
   return (
     <main>
-      <AnnouncementBar />
+      <AnnouncementBar data={data?.announcementBar} />
       <Navbar />
-      <HeroSection />
+      <HeroSection data={data?.hero} />
       <LogoBar />
-      <StatsBar />
-      <ServicesSection />
+      <StatsBar data={data?.stats} />
+      <ServicesSection data={data?.services} />
       <LinkCenterSection />
       <OutsourcingSection />
-      <CtaSection />
-      <TestimonialsSection />
-      <ResourcesSection />
+      <CtaSection data={data?.cta} />
+      <TestimonialsSection data={data?.testimonials} />
+      <ResourcesSection data={data?.resources} />
       <Footer />
     </main>
   );
