@@ -1,6 +1,5 @@
 import { defineConfig } from "sanity";
 import { structureTool } from "sanity/structure";
-import { visionTool } from "@sanity/vision";
 import { homepageSchema } from "./schemas/homepage";
 
 export default defineConfig({
@@ -8,7 +7,7 @@ export default defineConfig({
   title: "Blogtec Website",
   projectId: "jp4u2mib",
   dataset: "production",
-  plugins: [structureTool(), visionTool()],
+  plugins: [structureTool()],
   schema: {
     types: [homepageSchema],
   },
